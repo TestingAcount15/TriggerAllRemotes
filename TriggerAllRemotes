@@ -1,0 +1,36 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local TargetFolder = ReplicatedStorage:WaitForChild("Packages"):WaitForChild("Knit"):WaitForChild("Services")
+
+local function triggerEvent(remote)
+    print("Triggering RemoteEvent:", remote.Name)
+    local success, response = pcall(function()
+        remote:FireServer("Test Data")
+        return "Fired successfully"
+    end)
+    if success then
+        print("RemoteEvent Response:", response)
+    else
+        warn("Error triggering RemoteEvent:", response)
+    end
+end
+
+local function invokeFunction(remote)
+    print("Invoking RemoteFunction:", remote.Name)
+    local success, response = pcall(function()
+        return remote:InvokeServer("Test Data")
+    end)
+    if success then
+        print("RemoteFunction Response:", response)
+    else
+        warn("Error invoking RemoteFunction:", response)
+    end
+end
+
+for _, service in ipairs(TargetFolder:GetDescendants()) do
+    if service:IsA("RemoteEvent") then
+        triggerEvent(service)
+    elseif service:IsA("RemoteFunction") then
+        invokeFunction(service)
+    end
+end
